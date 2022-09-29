@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+// ↑ Dice que it's going to use the Prisma client JS library.
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// nnos guiamos de la pagina web de Prisma
+// cuando llevan "?" es porque es opcional
+// Link is obligatory because when you set a bookmark to a certain link, a link needs to be there.
+model User {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email String @unique
+  hash String
+
+  firstName String?
+  lastName String?
+  bookmarks Bookmark[]
+// ↑ it's going to be an array of bookmark module.
+  @@map("users")
+}
+model Bookmark {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title String
+  description String?
+  link String
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  // onDelete: Cascade means when the parent model or that bookmark is deleted, the bookmark should be deleted as well. It will run the migrations.
+// we use fields to indicate Prisma which fields are used for primary keys.
+// we use references to indicate to Prisma to which variable this primary key references it's going to be to the ID.
+  @@map("bookmarks")
+}
+// bookmarks will belong to [one/to the same] user.
+// relatiion: many to one.
